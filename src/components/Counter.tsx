@@ -1,4 +1,4 @@
-const Counter = ({remainingTime}) => {
+const Counter = ({ remainingTime }: { remainingTime: number }) => {
      if (remainingTime === 0) {
             console.log('TIme finished')
   }

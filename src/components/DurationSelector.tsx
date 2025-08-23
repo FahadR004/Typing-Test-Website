@@ -9,7 +9,7 @@ interface DurationSelectorProps {
 const DurationSelector: React.FC<DurationSelectorProps> = ({ darkMode, setTimer, isPlaying }) => {
   const [selectedDuration, setSelectedDuration] = useState(30);
   
-  const durations = [5, 30, 60];
+  const durations = [15, 30, 60];
 
   return (
     <>

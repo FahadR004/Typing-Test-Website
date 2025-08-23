@@ -12,196 +12,207 @@ const NOT_INPUT_KEYS = ['Shift', 'Alt', 'Enter', 'Control', 'Tab']
 
 function App() {
 
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+const [darkMode, setDarkMode] = useState<boolean>(() => {
+    try {
+      const savedDarkMode = localStorage.getItem('darkMode');
+      return savedDarkMode ? JSON.parse(savedDarkMode) : false;
+    } catch (error) {
+      console.error('Error reading darkMode from localStorage:', error);
+      return false;
+    }
+  });
 
-  const [wordsPerMin, setWordsPerMin] = useState<number>(0); // Metrics for result
+  const [wordsPerMin, setWordsPerMin] = useState<number>(0);
   const [charsPerMin, setCharsPerMin] = useState<number>(0); 
   const [accuracy, setAccuracy] = useState<number>(0); 
-  const [isPlaying, setIsPlaying] = useState<boolean>(false); // For starting and stopping timer
-  const [wordArray, setWordArray] = useState<string[]>(() => generate(50)); // List of words
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [wordArray, setWordArray] = useState<string[]>(() => {
+    const words = generate(50);
+    return Array.isArray(words) ? words : [words];
+  });
 
   const [currWordIndex, setCurrWordIndex] = useState<number>(0);
   const [checkerSpanText, setCheckerSpanText] = useState<string>('');
-  const [ backupText, setBackupText ] = useState<string>('');
+  const [backupText, setBackupText] = useState<string>('');
 
-  const [ errorFlag, setErrorFlag ] = useState<boolean>(false);
-  const [ errorWordCount, setErrorWordCount ] = useState<number>(0);
+  const [errorFlag, setErrorFlag] = useState<boolean>(false);
+  const [errorWordCount, setErrorWordCount] = useState<number>(0);
 
-  const [isRemoving, setIsRemoving] = useState<boolean>(false);  // For animated start typing component
+  const [isRemoving, setIsRemoving] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const [ modalOpen, setModalOpen ] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(30);
+  const [timerKey, setTimerKey] = useState<number>(0);
 
-  const [ timer, setTimer ] = useState<number>(30);
-  const [ timerKey, setTimerKey ] = useState<number>(0);
-
-  const inputRef = useRef(null); // Reference to the input box (hidden)
-  const checkerRef = useRef(null); // Reference to the middle span where the current word is being typed
-  const resultRef = useRef(null); // Reference to the result span where the all typed words are stored
-  const containerRef = useRef(null); // Reference to container of resultRef
-  const wordsRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const checkerRef = useRef<HTMLSpanElement>(null);
+  const resultRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wordsRef = useRef<HTMLSpanElement>(null);
 
   const focusInput = () => {
-    inputRef.current.focus()
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }
 
-  const setStateChanges = () => { // When the component is clicked
+  const setStateChanges = () => {
     focusInput();
     setIsPlaying(true);
     setIsRemoving(true);
   }
 
-const reset = () => {
-  setIsPlaying(false);
-  setIsRemoving(false);
+  const reset = () => {
+    // Metrics
+    setWordsPerMin(0);
+    setCharsPerMin(0);
+    setAccuracy(0);
 
-  // Metrics
-  setWordsPerMin(0);
-  setCharsPerMin(0);
-  setAccuracy(0);
+    // Others
+    setIsPlaying(false);
+    setIsRemoving(false);
+    setCheckerSpanText('');
+    setBackupText('');
+    setErrorFlag(false);
+    setErrorWordCount(0);
+    
+    setCurrWordIndex(0);
 
-  // Others
-  setCheckerSpanText('');
-  setBackupText('');
-  setErrorFlag(false);
-  setErrorWordCount(0); // Also reset error count
-  setCurrWordIndex(0);
-  
-  // Reset word index FIRST
-  setCurrWordIndex(0);
-  
-  // Clear result ref content
-  if (resultRef.current) {
-    resultRef.current.innerHTML = '';
+    // Clear result ref content
+    if (resultRef.current) {
+      resultRef.current.innerHTML = '';
+    }
+
+    // Blur input
+    if (inputRef.current) { 
+      inputRef.current.blur();
+    }
+
+    // Force timer reset
+    setTimerKey(prev => prev + 1);
+
+    // Set new word array
+    const newWords = generate(50);
+    setWordArray(Array.isArray(newWords) ? newWords : [newWords]);
   }
 
-  // Blur input
-  if (inputRef.current) { 
-    inputRef.current.blur();
-  }
-
-  // Force timer reset
-  setTimerKey(prev => prev + 1);
-
-  // Set new word array - React will handle the DOM updates
-  setWordArray(generate(50));
-} 
-
-   const wordsSpanRef = useMemo(() => {
-    return Array(wordArray.length).fill(0).map(() => createRef(null));
+    const wordsSpanRef = useMemo(() => {
+    return Array(wordArray.length).fill(0).map(() => createRef<HTMLSpanElement>());
   }, [wordArray]);
-
-  // useEffect(() => {
-  //   console.log(resultRef.current, wordsSpanRef,'here', wordsSpanRef[currWordIndex].current.textContent, wordArray)
-  // })
 
   // For generating words when the current word index is less than (total length - 10)
   useEffect(() => {
     if (currWordIndex > wordArray.length - 10) {
-      setWordArray((wordArray + ',' + generate(50)).split(','))
+      const newWords = generate(50);
+      const wordsArray = Array.isArray(newWords) ? newWords : [newWords];
+      setWordArray(prevWords => [...prevWords, ...wordsArray]);
     }
-  }, [wordsPerMin])
+  }, [currWordIndex])
 
-  // For setting the background of the body. Can't do it with the body tag without getting error and lag
+  // For setting the background of the body
   useEffect(() => {
     const bodyBg = darkMode ? '#33383F' : '#ededed';
     document.body.style.backgroundColor = bodyBg;
     document.body.style.transition = "all 0.5s ease-in-out";
-
-    
   }, [darkMode]);
 
-   useEffect(() => {
-    const currLength = checkerSpanText.length
-    const wordSpan = wordsSpanRef[currWordIndex].current;
-    const fullWord = wordSpan.textContent; // Gets all text content combined
+  useEffect(() => {
+    const currLength = checkerSpanText.length;
+    const wordSpan = wordsSpanRef[currWordIndex]?.current;
+    const fullWord = wordSpan?.textContent || ''; 
     
-    console.log('useEffect',checkerSpanText, backupText, fullWord, wordSpan)
+    console.log('useEffect', checkerSpanText, backupText, fullWord, wordSpan);
     
-    if (wordArray[currWordIndex].slice(0, currLength) !== checkerSpanText.slice(0, currLength) || checkerSpanText + fullWord !== wordArray[currWordIndex]) {
+    if (wordArray[currWordIndex] && (wordArray[currWordIndex].slice(0, currLength) !== checkerSpanText.slice(0, currLength) || checkerSpanText + fullWord !== wordArray[currWordIndex])) {
       setErrorFlag(true);
-      setErrorWordCount(errorWordCount + 1)
+      setErrorWordCount(prev => prev + 1);
     } else {
       setErrorFlag(false);
     }
-  }, [checkerSpanText] )
+  }, [checkerSpanText, currWordIndex, wordArray, wordsSpanRef])
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    } catch (error) {
+      console.error('Error saving darkMode to localStorage:', error);
+    }
+  }, [darkMode]);
 
   const toggleButton = () => {
     setDarkMode(!darkMode);
   }
 
-  const matchInput = (e) => {
-
-    if (NOT_INPUT_KEYS.includes(e.key)) { // Don't input extra words
-      return
+  const matchInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (NOT_INPUT_KEYS.includes(e.key)) {
+      return;
     }
-    const currWord = wordsSpanRef[currWordIndex].current // Get current word span
-    let allCurrChars = wordsSpanRef[currWordIndex].current.childNodes; // Spans of all current characters
+    
+    if (!wordsSpanRef[currWordIndex]?.current) {
+      return;
+    }
 
-     if (e.key === 'Backspace') {
+    const currWord = wordsSpanRef[currWordIndex].current;
+    const allCurrChars = currWord.childNodes;
+
+    if (e.key === 'Backspace') {
       if (checkerSpanText.length > 0) {
-          if (checkerSpanText[checkerSpanText.length - 1] === backupText[backupText.length -1] || checkerSpanText + backupText === wordArray[currWordIndex]) {
-            const newCharSpan = document.createElement('span');
-            newCharSpan.textContent= checkerSpanText[checkerSpanText.length-1];
-            wordsSpanRef[currWordIndex].current.insertBefore(
-                newCharSpan,  
-                wordsSpanRef[currWordIndex].current.firstChild
-            );
-            setBackupText(backupText.slice(0, backupText.length-1))
+        if (checkerSpanText[checkerSpanText.length - 1] === backupText[backupText.length - 1] || 
+            checkerSpanText + backupText === wordArray[currWordIndex]) {
+          const newCharSpan = document.createElement('span');
+          newCharSpan.textContent = checkerSpanText[checkerSpanText.length - 1];
+          newCharSpan.className = 'character';
+          currWord.insertBefore(newCharSpan, currWord.firstChild);
+          setBackupText(backupText.slice(0, -1));
         }
-
-          setCheckerSpanText(checkerSpanText.slice(0, checkerSpanText.length-1));
-      } else {
-        setCheckerSpanText('');
+        setCheckerSpanText(checkerSpanText.slice(0, -1));
       }
-      
-      return
+      return;
     }
 
     if (e.key === ' ') {
-
-        // Typing Logic
-        const newSpan = document.createElement('span');
-        newSpan.textContent = checkerSpanText;
-        
-        if (checkerSpanText != wordArray[currWordIndex] || errorFlag){
-           newSpan.className = 'text-gray-400 line-through whitespace-nowrap pr-2'
-        } else {
-          newSpan.className = 'text-gray-400 whitespace-nowrap pr-2'
-        }
+      // Create span for completed word
+      const newSpan = document.createElement('span');
+      newSpan.textContent = checkerSpanText;
       
+      if (checkerSpanText !== wordArray[currWordIndex] || errorFlag) {
+        newSpan.className = 'text-gray-400 line-through whitespace-nowrap pr-2';
+      } else {
+        newSpan.className = 'text-gray-400 whitespace-nowrap pr-2';
+      }
+      
+      if (resultRef.current) {
         resultRef.current.appendChild(newSpan);
+      }
 
-        setCurrWordIndex(currWordIndex + 1);
-        // currWord.remove(); // Remove the current word span
-        currWord.style.display = 'none';
-        setCheckerSpanText('')
-        setBackupText('');
+      // Move to next word
+      setCurrWordIndex(currWordIndex + 1);
+      currWord.style.display = 'none';
+      setCheckerSpanText('');
+      setBackupText('');
 
-        if (!errorFlag) {
-          // Calculating metrics
-          setWordsPerMin(wordsPerMin + 1);
-        }
-        setCharsPerMin(charsPerMin + (checkerSpanText).length);
-        setErrorFlag(false);
+      // Update metrics
+      if (!errorFlag) {
+        setWordsPerMin(wordsPerMin + 1);
+      }
+      setCharsPerMin(charsPerMin + checkerSpanText.length);
+      setErrorFlag(false);
 
-      return
-    } 
-    if (e.key === allCurrChars[0]?.innerText) {
-      setBackupText(backupText + allCurrChars[0].innerText);
-      allCurrChars[0].remove() // Remove the character span from the allCurrChars
-      setCheckerSpanText(checkerSpanText + e.key); // Set the checkerSpanText to the typed character 
-      
+      return;
+    }
 
-    }  else {
-
-      e.key !== ' ' ? setCheckerSpanText(checkerSpanText + e.key) : '' ; // Set the checkerSpanText to the typed character 
-     
-    }  
+    // Handle character input
+    const firstChar = allCurrChars[0] as HTMLElement;
+    if (firstChar && e.key === firstChar.innerText) {
+      setBackupText(backupText + firstChar.innerText);
+      firstChar.remove();
+      setCheckerSpanText(checkerSpanText + e.key);
+    } else if (e.key !== ' ') {
+      setCheckerSpanText(checkerSpanText + e.key);
+    }
   }
 
   return (
-
     <>
       <Modal 
           isOpen={modalOpen} 
@@ -234,7 +245,9 @@ const reset = () => {
                     setTimeout(() => {
                     setModalOpen(true)
                   }, 1000); 
-                  inputRef.current.blur()
+                  if (inputRef.current) {
+                    inputRef.current.blur();
+                  }
                 }
               }
                 size={150}  
@@ -282,19 +295,13 @@ const reset = () => {
                 {checkerSpanText}
               </span>
               <span ref={wordsRef} className='w-1/2 text-left'>
-               {wordArray.map((word, index) => (
-                <span 
-                  id={`word-${index}`} 
-                  key={`${word}-${index}`} 
-                  className={`transition-colors pr-2 pb-8 ${darkMode ? 'text-[#0087F2]' : 'text-yellow-300'}`} 
-                  ref={wordsSpanRef[index]}
-                  style={{ display: index < currWordIndex ? 'none' : 'inline' }}
-                >
-                  {word.split('').map((char, charIndex) => (
-                    <span key={`${char}-${charIndex}`} className='character'>{char}</span>
-                  ))}
-                </span>
-              ))}
+                {wordArray.map((word, index) => (
+                  <span id={word} key={`${word}-${index}`} className={`transition-colors pr-2 pb-8 ${darkMode ? 'text-[#0087F2]' : 'text-yellow-300'}`} ref={wordsSpanRef[index]}>
+                    {word.split('').map((char, charIndex) => (
+                      <span key={`${char}-${charIndex}`} className='character'>{char}</span>
+                    ))}
+                  </span>
+                ))}
               </span>
             </div>
           </div>
@@ -307,7 +314,6 @@ const reset = () => {
         />
       </main>
     </>
-
   )
 }
 

@@ -93,7 +93,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin,
                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50 animate-appear transition-all shadow-lg">
                 <div className="w-2xl bg-white shadow rounded text-center">
                     <div className="py-4 mt-2 mx-2 relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" on 
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"  
                         className="size-10 absolute top-0 right-0 text-red-500 cursor-pointer hover:text-red-700" onClick={onClose}>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
