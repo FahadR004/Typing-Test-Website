@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: Poppins-Regular;
+    src: url('../src/assets/fonts/poppins/Poppins-Regular.ttf');
+}
+
+@font-face {
+    font-family: Poppins-Light;
+    src: url('../src/assets/fonts/poppins/Poppins-Light.ttf');
+}
+
+
+@font-face {
+    font-family: Poppins-ExLight;
+    src: url('../src/assets/fonts/poppins/Poppins-ExtraLight.ttf');
+}
+
+@font-face {
+    font-family: Poppins-Bold;
+    src: url('../src/assets/fonts/poppins/Poppins-Bold.ttf');
+}
+
+
+@font-face {
+    font-family: Poppins-ExBold;
+    src: url('../src/assets/fonts/poppins/Poppins-ExtraBold.ttf');
+}
+
+@theme {
+    --font-poppins: Poppins-Regular, sans-serif;
+    --font-poppins-bold: Poppins-Bold, sans-serif;
+    --font-poppins-exbold: Poppins-ExBold, sans-serif;
+    --font-poppins-light: Poppins-Light, sans-serif;
+    --font-poppins-exlight: Poppins-ExLight, sans-serif;
+    --animate-blink: blink 1s step-end infinite;
+    --animate-fade: fadeOut 1s ease-in-out;
+    --animate-appear: appear 0.5s ease-in-out; 
+    
+    @keyframes blink {
+        0%,
+        100% {
+        border-left: 1px solid black;
+        }
+        50% {
+        border: none;
+        }
+    }
+
+    @keyframes fadeOut {
+        0% {
+            opacity: 0;
+        }
+
+        25% {
+            opacity: 0.75;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        75% {
+            opacity: 0.25;
+        }
+
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes appear {
+        0% {
+            /* transform: translateY(-100%); */
+            /* opacity: 0 */
+        }
+            
+        100% {
+            /* transform: translateY(0%); */
+            /* opacity: 1; */
+        }
+
+    }
+}
+
+body {
+    transition: background-color 0.5s ease-in-out;
+}
