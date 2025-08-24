@@ -21,8 +21,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin,
 
     const getResultText = (includeUrl = false) => {
         const baseText = `My Typing Speed: ${wordsPerMin} WPM (${charPerMin} CPM) with ${accuracy}% accuracy!`;
-        const websiteUrl = "https://your-typing-test-website.com"; // Replace with your actual website URL
-        
+        const websiteUrl = "https://typing-test-website-fr2004.vercel.app/";         
         let message = "";
         if (wordsPerMin === 0) {
             message = `${baseText} I need to practice more! 😅`;
