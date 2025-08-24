@@ -2,7 +2,7 @@ import type React from "react";
 import { useState } from "react";
 import Cat0 from "../assets/cat-w0.jpeg"
 import Cat1 from "../assets/cat-w20.jpg"
-import Cat2 from "../assets/cat-w40.png"
+import Cat2 from "../assets/cat-w40.jpg"
 import Cat3 from "../assets/cat-w60.jpg"
 import Cat from "../assets/cat.gif"
 
