@@ -117,27 +117,27 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin,
                             {wordsPerMin === 0 ?
                                 <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Ummm...you need to look at the screen!!😫😭</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}! Try placing your hands on the keyboard...</p>
+                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! Try placing your hands on the keyboard...</p>
                                 </>
                                 : wordsPerMin < 20 ?
                                 <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Hmmm....you can do better! 😖</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}! Try practicing more and you can get even better results! 💪</p>
+                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! Try practicing more and you can get even better results! 💪</p>
                                 </>
                                 : wordsPerMin < 40 ?
                                    <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Not bad! You scored well! 😮</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}! Try practicing more and you can get even better results! 💪</p>
+                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! Try practicing more and you can get even better results! 💪</p>
                                 </>
                                 : wordsPerMin < 60 ?
                                    <>  
                                         <h1 className="font-poppins-bold text-2xl text-left">Now that's what I am talking about! 🤩</h1>
-                                        <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}! That's great speed! I am loving it!</p>
+                                        <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! That's great speed! I am loving it!</p>
                                     </>
                                 :  
                                 <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Wow! You are a Total Pro! 🎉</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}! That's some amazing speed you got there. You should compete in a competion! 😩</p>
+                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! That's some amazing speed you got there. You should compete in a competion! 😩</p>
                                 </>
                                 } <div id="share-content" className="mb-6 text-center">
                             <hr className="mt-4 border-gray-300" />
