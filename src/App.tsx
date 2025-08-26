@@ -114,7 +114,7 @@ function App() {
     setTimerKey(prev => prev + 1);
 
     // Set new word array
-    const newWords = generate(50);
+    const newWords = generate({ exactly: 50, minLength: 3, maxLength: 7});
     setWordArray(Array.isArray(newWords) ? newWords : [newWords]);
   }
 
@@ -125,7 +125,7 @@ function App() {
   // For generating words when the current word index is less than (total length - 10)
   useEffect(() => {
     if (currWordIndex > wordArray.length - 10) {
-      const newWords = generate(50);
+      const newWords = generate({ exactly: 50, minLength: 3, maxLength: 7});
       const wordsArray = Array.isArray(newWords) ? newWords : [newWords];
       setWordArray(prevWords => [...prevWords, ...wordsArray]);
     }
