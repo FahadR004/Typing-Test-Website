@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface DurationSelectorProps {
     darkMode: boolean,
     setTimer: (arg0: number) => void,
-    isPlaying: boolean
+    isPlaying: boolean,
+    selectedDuration: number,
+    setSelectedDuration: (arg0: number) => void,
 }
 
-const DurationSelector: React.FC<DurationSelectorProps> = ({ darkMode, setTimer, isPlaying }) => {
-  const [selectedDuration, setSelectedDuration] = useState(30);
+const DurationSelector: React.FC<DurationSelectorProps> = ({ darkMode, setTimer, isPlaying, selectedDuration, setSelectedDuration }) => {
   
-  const durations = [15, 30, 60];
+  const durations = [30, 60, 90];
 
   return (
     <>

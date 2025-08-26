@@ -11,16 +11,17 @@ interface ModalProps {
     onClose: () => void,
     wordsPerMin: number,
     charPerMin: number,
-    accuracy: number
+    accuracy: number,
+    duration: number
 }
 
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin, accuracy }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin, accuracy, duration }) => {
 
      const [copyText, setCopyText] = useState("Or copy your results");
 
     const getResultText = (includeUrl = false) => {
-        const baseText = `My Typing Speed: ${wordsPerMin} WPM (${charPerMin} CPM) with ${accuracy}% accuracy!`;
+        const baseText = `I typed ${wordsPerMin} words (${charPerMin} CPM) with ${accuracy}% accuracy in ${duration} seconds!`;
         const websiteUrl = "https://typing-test-website-fr2004.vercel.app/";         
         let message = "";
         if (wordsPerMin === 0) {
@@ -87,7 +88,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin,
     };
 
     return (
-        <>
+        <>  
             {isOpen &&
                 <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50 animate-appear transition-all shadow-lg">
                 <div className="w-2xl bg-white shadow rounded text-center">
@@ -103,11 +104,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin,
                         <div id="img-content" className="pt-6">
                             {wordsPerMin === 0 ? 
                                 <img src={Cat0} alt="" className="w-80 h-80 rounded shadow-lg border-2 border-black"/>
-                               : wordsPerMin < 20 ?
+                               : ((wordsPerMin < 10 && duration === 30) || (wordsPerMin < 20 && duration === 60) || (wordsPerMin < 30 && duration === 90)) ?
                                 <img src={Cat1} alt="" className="w-80 h-80 rounded shadow-lg border-2 border-black"/>
-                              :  wordsPerMin < 40 ? 
+                              :  ((wordsPerMin < 20 && duration === 30) || (wordsPerMin < 35 && duration === 60) || (wordsPerMin < 40 && duration === 90)) ? 
                                 <img src={Cat2} alt="" className="w-80 h-80 rounded shadow-lg border-2 border-black"/>
-                               : wordsPerMin < 60 ?
+                               : ((wordsPerMin < 35 && duration === 30) || (wordsPerMin < 50 && duration === 60) || (wordsPerMin < 60 && duration === 90)) ?
                                 <img src={Cat3} alt="" className="w-80 h-80 rounded shadow-lg border-2 border-black"/>
                                 : <img src={Cat} alt="" className="w-80 h-80 rounded shadow-lg border-2 border-black"/> 
                             }
@@ -116,27 +117,27 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, wordsPerMin, charPerMin,
                             {wordsPerMin === 0 ?
                                 <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Ummm...you need to look at the screen!!😫😭</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! Try placing your hands on the keyboard...</p>
+                                    <p className="">You typed 0 words in {duration} seconds!!! Try placing your hands on the keyboard...</p>
                                 </>
-                                : wordsPerMin < 20 ?
+                                : ((wordsPerMin < 10 && duration === 30) || (wordsPerMin < 20 && duration === 60) || (wordsPerMin < 30 && duration === 90)) ?
                                 <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Hmmm....you can do better! 😖</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! Try practicing more and you can get even better results! 💪</p>
+                                    <p className="">You typed {wordsPerMin} words ({charPerMin} characters) in {duration} seconds. Your accuracy was {accuracy}%! Try practicing more and you can get even better results! 💪</p>
                                 </>
-                                : wordsPerMin < 40 ?
+                                : ((wordsPerMin < 20 && duration === 30) || (wordsPerMin < 35 && duration === 60) || (wordsPerMin < 40 && duration === 90)) ?
                                    <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Not bad! You scored well! 😮</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! Try practicing more and you can get even better results! 💪</p>
+                                    <p className="">You typed {wordsPerMin} words ({charPerMin} characters) in {duration} seconds. Your accuracy was {accuracy}%! Try practicing more and you can get even better results! 💪</p>
                                 </>
-                                : wordsPerMin < 60 ?
+                                :  ((wordsPerMin < 35 && duration === 30) || (wordsPerMin < 50 && duration === 60) || (wordsPerMin < 60 && duration === 90)) ?
                                    <>  
                                         <h1 className="font-poppins-bold text-2xl text-left">Now that's what I am talking about! 🤩</h1>
-                                        <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! That's great speed! I am loving it!</p>
+                                        <p className="">You typed {wordsPerMin} words ({charPerMin} characters) in {duration} seconds. Your accuracy was {accuracy}%! That's great speed! I am loving it!</p>
                                     </>
                                 :  
                                 <>  
                                     <h1 className="font-poppins-bold text-2xl text-left">Wow! You are a Total Pro! 🎉</h1>
-                                    <p className="">Your Typing Speed is {wordsPerMin} WPM ({charPerMin} CPM). Your accuracy was {accuracy}%! That's some amazing speed you got there. You should compete in a competion! 😩</p>
+                                    <p className="">You typed {wordsPerMin} words ({charPerMin} characters) in {duration} seconds. Your accuracy was {accuracy}%! That's some amazing speed you got there. You should compete in a competion! 😩</p>
                                 </>
                                 } <div id="share-content" className="mb-6 text-center">
                             <hr className="mt-4 border-gray-300" />
